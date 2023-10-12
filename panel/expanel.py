@@ -42,6 +42,3 @@ def openFrame():
 
     frame.Show()
     app.MainLoop()
-
-
-openFrame()
