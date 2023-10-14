@@ -4,12 +4,22 @@ import wx
 # Frame, Dialog 같은 윈도우들로 다른 컨테이너에 포함 될 수 없다.
 # 비주얼 윈도우의 최상위 계층
 
+# wx.Frame 생성자 는 여러 스타일 플래그를 제공한다.
+# wx.DEFAULT_FRAME_STYLE  다음에 열거하는 모든 마스크 포함하는 bit mask
+# wx.MINIMIZE_BOX 타이틀바에 최소화 버튼 표시
+# wx.MAXIMIZE_BOX
+# wx.RESIZE_BORDER  사용자가 윈도우 크기 조정가능
+# wx.CAPTION  프레임의 타이틀바에 타이틀 설명 표시
+# wx.CLOSE_BOX 닫기 버튼 표시
+# wx.SYSTEM_MENU  시스템 메뉴 표시
+# wx.CLIP_CHILDREN  백그라운드에서 다시 그릴 때 발생하는 깜빡임 제거(windows의 경우에만)
+
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title=''):
         super(MyFrame, self).__init__(parent, title=title)
 
-        self.SetIcon(wx.Icon("./sources/logo.png"))
+        # self.SetIcon(wx.Icon("./sources/logo.png"))
 
         self.panel = MyPanel(self)
 
@@ -37,12 +47,34 @@ class MyPanel(wx.Panel):
 # 다른 컨트롤을 포함할 수 없는 컨트롤
 # 트리의 최하 레벨
 
+class ImagePanel(wx.Panel):
+    def __init__(self, parent):
+        super(ImagePanel, self).__init__(parent)
+
+        theBitmap = wx.Bitmap('./sources/logo.png')
+        self.bitmap = wx.StaticBitmap(self, bitmap=theBitmap)
+
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(None, title='Main Frame')
+        self.frame = MyFrame(None, title='Main APP')
+
+        self.frame.Bind(wx.EVT_SHOW, self.OnFrameShow)  # 프레임이 보일 떄 실행되는 이벤트
+        self.frame.Bind(wx.EVT_CLOSE, self.OnFrameClose)  # 프레임이 닫힐 때
+
         self.frame.Show()
+
         return super().OnInit()
+
+    def OnFrameShow(self, event):
+        theFrame = event.EventObject
+        print("Frame (%s) shown !" % theFrame.Title)
+        event.Skip()
+
+    def OnFrameClose(self, event):
+        theFrame = event.EventObject
+        print("Frame (%s) closing !" % theFrame.Title)
+        event.Skip()
 
 
 if __name__ == '__main__':
