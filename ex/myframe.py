@@ -1,4 +1,5 @@
 import wx
+# import utils
 
 # ### 최상위 윈도우
 # Frame, Dialog 같은 윈도우들로 다른 컨테이너에 포함 될 수 없다.
@@ -37,9 +38,45 @@ class MyPanel(wx.Panel):
         s = wx.StaticText(self, -1, '폰트', (20, 30), style=wx.ALIGN_CENTER)
         s.SetFont(font1)
 
-        self.button = wx.Button(self, label='Push me')
+        self.button_copy = wx.Button(self, label='Copy')
+        self.button_paste = wx.Button(self, label='Paste')
 
-        # self.SetCursor(wx.CURSOR_HAND)
+        vbox = wx.BoxSizer(wx.HORIZONTAL)
+        vbox.AddMany([
+            (self.button_copy, wx.EXPAND | wx.ALL, 0),
+            (self.button_paste, wx.EXPAND | wx.ALL, 0),
+        ])
+
+        self.Bind(wx.EVT_BUTTON, self.OnButton)
+
+        self.SetSizer(vbox)
+
+    def OnButton(self, event):
+        button = event.EventObject
+        if button is self.button_copy:
+            txt = GetClipboardText()
+            print(txt)
+        elif button is self.button_paste:
+            SetClipboardText('test for clipboard')
+            print("set")
+
+
+def GetClipboardText():
+    text_obj = wx.TextDataObject()
+    rtext = ""
+    if wx.TheClipboard.IsOpened() or wx.TheClipboard.Open():
+        if wx.TheClipboard.GetData(text_obj):
+            rtext = text_obj.GetText()
+            wx.TheClipboard.Close()
+            return rtext
+
+
+def SetClipboardText(text):
+    data_o = wx.TextDataObject()
+    data_o.SetText(text)
+    if wx.TheClipboard.IsOpened() or wx.TheClipboard.Open():
+        wx.TheClipboard.SetData(data_o)
+        wx.TheClipboard.Close()
 
 
 # ### 컨트롤
