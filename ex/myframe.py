@@ -20,9 +20,20 @@ class MyFrame(wx.Frame):
     def __init__(self, parent, title=''):
         super(MyFrame, self).__init__(parent, title=title)
 
-        # self.SetIcon(wx.Icon("./sources/logo.png"))
+        self.SetIcon(wx.Icon("../sources/logo.png"))
 
-        self.panel = MyPanel(self)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.panel_1 = MyPanel(self)
+        self.panel_2 = CheckboxPanel(self)
+        self.panel_3 = ImagePanel(self)
+
+        vbox.AddMany([
+            (self.panel_1, wx.EXPAND | wx.ALL),
+            (self.panel_2, wx.EXPAND | wx.ALL),
+            (self.panel_3, wx.EXPAND | wx.ALL),
+        ])
+        self.SetSizer(vbox)
+
 
 # ### 일반적인 컨테이너
 # Panel, Notebook, ....
@@ -61,6 +72,37 @@ class MyPanel(wx.Panel):
             print("set")
 
 
+class CheckboxPanel(wx.Panel):
+    def __init__(self, parent):
+        super(CheckboxPanel, self).__init__(parent)
+
+        vsizer = wx.BoxSizer(wx.VERTICAL)
+        self.cbAll = wx.CheckBox(self, label='모두 선택', style=wx.CHK_3STATE)
+        vsizer.Add(self.cbAll)
+        self.option1 = wx.CheckBox(self, label='옵션 1')
+        vsizer.Add(self.option1, flag=wx.LEFT, border=10)
+        self.option2 = wx.CheckBox(self, label="옵션 2")
+        vsizer.Add(self.option2, flag=wx.LEFT, border=10)
+
+        self.SetSizer(vsizer)
+        self.Bind(wx.EVT_CHECKBOX, self.OnCheckBox)
+
+    def OnCheckBox(self, event):
+        check = event.EventObject
+        if check is self.cbAll:
+            self.option1.Value = check.Value
+            self.option2.Value = check.Value
+        else:
+            values = [self.option1.Value, self.option2.Value]
+
+        if all(values):
+            self.cbAll.Set3StateValue(wx.CHK_CHECKED)
+        elif any(values):
+            self.cbAll.Set3StateValue(wx.CHK_UNDETERMINED)
+        else:
+            self.cbAll.Set3StateValue(wx.CHK_UNCHECKED)
+
+
 def GetClipboardText():
     text_obj = wx.TextDataObject()
     rtext = ""
@@ -88,7 +130,7 @@ class ImagePanel(wx.Panel):
     def __init__(self, parent):
         super(ImagePanel, self).__init__(parent)
 
-        theBitmap = wx.Bitmap('./sources/logo.png')
+        theBitmap = wx.Bitmap('../sources/logo.png')
         self.bitmap = wx.StaticBitmap(self, bitmap=theBitmap)
 
 
