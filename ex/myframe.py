@@ -1,4 +1,5 @@
 import wx
+import os
 # import utils
 
 # ### 최상위 윈도우
@@ -33,6 +34,9 @@ class MyFrame(wx.Frame):
             (self.panel_3, wx.EXPAND | wx.ALL),
         ])
         self.SetSizer(vbox)
+
+        self.statusbar = self.CreateStatusBar(2)
+        self.statusbar.SetStatusText('Statusbar!')
 
 
 # ### 일반적인 컨테이너
@@ -132,6 +136,12 @@ class ImagePanel(wx.Panel):
 
         theBitmap = wx.Bitmap('../sources/logo.png')
         self.bitmap = wx.StaticBitmap(self, bitmap=theBitmap)
+        self.bitmap.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDownThumbImage)
+
+    def OnRightDownThumbImage(self, e):
+        mpos = wx.GetMousePosition()
+        pos = self.ScreenToClient(mpos)
+        self.PopupMenu(PopMenu(self), pos)
 
 
 class MyApp(wx.App):
@@ -154,6 +164,38 @@ class MyApp(wx.App):
         theFrame = event.EventObject
         print("Frame (%s) closing !" % theFrame.Title)
         event.Skip()
+
+
+class PopMenu(wx.Menu):
+    def __init__(self, parent):
+        super(PopMenu, self).__init__()
+
+        self.parent = parent
+
+        pmnuOpenFolder = wx.MenuItem(self, wx.ID_ANY, '폴더열기')
+        self.Append(pmnuOpenFolder)
+        pmnuSaveAs = wx.MenuItem(self, wx.ID_ANY, '다른이름으로 저장')
+        self.Append(pmnuSaveAs)
+        pmnuDelete = wx.MenuItem(self, wx.ID_ANY, '삭제')
+        self.Append(pmnuDelete)
+
+        self.Bind(wx.EVT_MENU, self.OnOpenFolder, pmnuOpenFolder)
+        self.Bind(wx.EVT_MENU, self.OnSaveAs, pmnuSaveAs)
+        self.Bind(wx.EVT_MENU, self.OnDelete, pmnuDelete)
+
+    def OnOpenFolder(self, e):
+        print("folder name: ", self.parent.fn)
+        pass
+
+    def OnSaveAs(self, e):
+        pass
+
+    def OnDelete(self, e):
+        fn = self.parent.fn
+        if os.path.exists(fn):
+            os.remove(fn)
+
+        pass
 
 
 if __name__ == '__main__':
