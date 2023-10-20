@@ -1,5 +1,7 @@
 import wx
 import os
+from wx.adv import DatePickerCtrl
+
 # import utils
 
 # ### 최상위 윈도우
@@ -56,10 +58,15 @@ class MyPanel(wx.Panel):
         self.button_copy = wx.Button(self, label='Copy')
         self.button_paste = wx.Button(self, label='Paste')
 
+        now = wx.DateTime.Now()
+        self._dp = DatePicker(
+            self, now, wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
+
         vbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox.AddMany([
             (self.button_copy, wx.EXPAND | wx.ALL, 0),
             (self.button_paste, wx.EXPAND | wx.ALL, 0),
+            (self._dp, wx.EXPAND | wx.ALL, 0),
         ])
 
         self.Bind(wx.EVT_BUTTON, self.OnButton)
@@ -150,6 +157,7 @@ class MyApp(wx.App):
 
         self.frame.Bind(wx.EVT_SHOW, self.OnFrameShow)  # 프레임이 보일 떄 실행되는 이벤트
         self.frame.Bind(wx.EVT_CLOSE, self.OnFrameClose)  # 프레임이 닫힐 때
+        self.frame.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChange)
 
         self.frame.Show()
 
@@ -164,6 +172,10 @@ class MyApp(wx.App):
         theFrame = event.EventObject
         print("Frame (%s) closing !" % theFrame.Title)
         event.Skip()
+
+    def OnDateChange(self, evt):
+        date = evt.GetDate()
+        self.Title = date.Format()
 
 
 class PopMenu(wx.Menu):
@@ -196,6 +208,12 @@ class PopMenu(wx.Menu):
             os.remove(fn)
 
         pass
+
+
+class DatePicker(wx.adv.DatePickerCtrl):
+    def __init__(self, parent, dt, style=wx.adv.DP_DEFAULT):
+        super(DatePicker, self).__init__(parent, dt=dt, style=style)
+        self.SetInitialSize((120, -1))
 
 
 if __name__ == '__main__':
