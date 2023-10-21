@@ -29,11 +29,13 @@ class MyFrame(wx.Frame):
         self.panel_1 = MyPanel(self)
         self.panel_2 = CheckboxPanel(self)
         self.panel_3 = ImagePanel(self)
+        self.panel_4 = MyDropPanel(self)
 
         vbox.AddMany([
             (self.panel_1, wx.EXPAND | wx.ALL),
             (self.panel_2, wx.EXPAND | wx.ALL),
             (self.panel_3, wx.EXPAND | wx.ALL),
+            (self.panel_4, wx.EXPAND | wx.ALL),
         ])
         self.SetSizer(vbox)
 
@@ -45,6 +47,15 @@ class MyFrame(wx.Frame):
 # Panel, Notebook, ....
 # 컨트롤을 그룹으로 묶거나 배치를 할 때 사용
 # 다른 컨테니어나 컨트롤을 가질 수 있다.
+
+class MyDropPanel(wx.Panel):
+    def __init__(self, parent):
+        super(MyDropPanel, self).__init__(parent)
+
+        self.text = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.text.AppendText("Drag and Drop files")
+        dropTarget = MyFileDropTarget(self.text)
+        self.text = self.SetDropTarget(dropTarget)
 
 
 class MyPanel(wx.Panel):
@@ -151,33 +162,6 @@ class ImagePanel(wx.Panel):
         self.PopupMenu(PopMenu(self), pos)
 
 
-class MyApp(wx.App):
-    def OnInit(self):
-        self.frame = MyFrame(None, title='Main APP')
-
-        self.frame.Bind(wx.EVT_SHOW, self.OnFrameShow)  # 프레임이 보일 떄 실행되는 이벤트
-        self.frame.Bind(wx.EVT_CLOSE, self.OnFrameClose)  # 프레임이 닫힐 때
-        self.frame.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChange)
-
-        self.frame.Show()
-
-        return super().OnInit()
-
-    def OnFrameShow(self, event):
-        theFrame = event.EventObject
-        print("Frame (%s) shown !" % theFrame.Title)
-        event.Skip()
-
-    def OnFrameClose(self, event):
-        theFrame = event.EventObject
-        print("Frame (%s) closing !" % theFrame.Title)
-        event.Skip()
-
-    def OnDateChange(self, evt):
-        date = evt.GetDate()
-        self.Title = date.Format()
-
-
 class PopMenu(wx.Menu):
     def __init__(self, parent):
         super(PopMenu, self).__init__()
@@ -214,6 +198,43 @@ class DatePicker(wx.adv.DatePickerCtrl):
     def __init__(self, parent, dt, style=wx.adv.DP_DEFAULT):
         super(DatePicker, self).__init__(parent, dt=dt, style=style)
         self.SetInitialSize((120, -1))
+
+
+class MyFileDropTarget(wx.FileDropTarget):
+    def __init__(self, target):
+        super(MyFileDropTarget, self).__init__()
+        self.target = target
+
+    def OnDropFiles(self, x, y, filenames):
+        for fname in filenames:
+            self.target.AppendText(fname)
+
+
+class MyApp(wx.App):
+    def OnInit(self):
+        self.frame = MyFrame(None, title='Main APP')
+
+        self.frame.Bind(wx.EVT_SHOW, self.OnFrameShow)  # 프레임이 보일 떄 실행되는 이벤트
+        self.frame.Bind(wx.EVT_CLOSE, self.OnFrameClose)  # 프레임이 닫힐 때
+        self.frame.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChange)
+
+        self.frame.Show()
+
+        return super().OnInit()
+
+    def OnFrameShow(self, event):
+        theFrame = event.EventObject
+        print("Frame (%s) shown !" % theFrame.Title)
+        event.Skip()
+
+    def OnFrameClose(self, event):
+        theFrame = event.EventObject
+        print("Frame (%s) closing !" % theFrame.Title)
+        event.Skip()
+
+    def OnDateChange(self, evt):
+        date = evt.GetDate()
+        self.Title = date.Format()
 
 
 if __name__ == '__main__':
