@@ -143,11 +143,6 @@ def SetClipboardText(text):
         wx.TheClipboard.Close()
 
 
-# ### 컨트롤
-# Button, CheckBox, ComboBox, ....
-# 다른 컨트롤을 포함할 수 없는 컨트롤
-# 트리의 최하 레벨
-
 class ImagePanel(wx.Panel):
     def __init__(self, parent):
         super(ImagePanel, self).__init__(parent)
@@ -161,6 +156,11 @@ class ImagePanel(wx.Panel):
         pos = self.ScreenToClient(mpos)
         self.PopupMenu(PopMenu(self), pos)
 
+
+# ### 컨트롤
+# Button, CheckBox, ComboBox, ....
+# 다른 컨트롤을 포함할 수 없는 컨트롤
+# 트리의 최하 레벨
 
 class PopMenu(wx.Menu):
     def __init__(self, parent):
