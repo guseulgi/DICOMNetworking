@@ -21,7 +21,7 @@ from wx.adv import DatePickerCtrl
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title=''):
-        super(MyFrame, self).__init__(parent, title=title)
+        super(MyFrame, self).__init__(parent, title=title, size=(600, 500))
 
         self.SetIcon(wx.Icon("../sources/logo.png"))
 
@@ -31,11 +31,14 @@ class MyFrame(wx.Frame):
         self.panel_3 = ImagePanel(self)
         self.panel_4 = MyDropPanel(self)
 
+        self.panel_5 = MyRadioPanel(self)
+
         vbox.AddMany([
             (self.panel_1, wx.EXPAND | wx.ALL),
             (self.panel_2, wx.EXPAND | wx.ALL),
             (self.panel_3, wx.EXPAND | wx.ALL),
             (self.panel_4, wx.EXPAND | wx.ALL),
+            (self.panel_5, wx.EXPAND | wx.ALL),
         ])
         self.SetSizer(vbox)
 
@@ -92,6 +95,25 @@ class MyPanel(wx.Panel):
         elif button is self.button_paste:
             SetClipboardText('test for clipboard')
             print("set")
+
+
+class MyRadioPanel(wx.Panel):
+    def __init__(self, parent):
+        super(MyRadioPanel, self).__init__(parent)
+
+        self.rb1 = wx.RadioButton(
+            self, 11, label='Radio A', pos=(10, 10), style=wx.RB_GROUP)
+        self.rb2 = wx.RadioButton(self, 22, label='Radio B', pos=(10, 40))
+        self.rb3 = wx.RadioButton(self, 33, label='Radio C', pos=(10, 70))
+
+        self.vbox = wx.BoxSizer(wx.VERTICAL)
+        self.vbox.AddMany([
+            (self.rb1, wx.EXPAND | wx.ALL | 0),
+            (self.rb2, wx.EXPAND | wx.ALL | 0),
+            (self.rb3, wx.EXPAND | wx.ALL | 0),
+        ])
+
+        self.SetSizer(self.vbox)
 
 
 class CheckboxPanel(wx.Panel):
